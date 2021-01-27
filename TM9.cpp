@@ -1,30 +1,24 @@
-#include<sys/wait.h>
-#include<errno.h>
-#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
 #include<unistd.h>
-using namespace std;
-int system1(const char * cmdstr)
+#include<errno.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+void sys(const char *cmdstr)
 {
-	pid_t pid;
-	int status;
-	if(cmdstr==NULL)
-		return(1);
-	if((pid=fork())<0)
-		status=-1;
-	else if(pid==0){
-		execl("/bin/sh","sh","-c",cmdstr,(char *)0);
-		_exit(127);
-	}
-	else
-		while(waitpid(pid,&status,0)<0)
-			if(errno!=EINTR){
-				status=-1;
-				break;
-			}
+    int pid;
+    pid=fork();
+    if(pid==0)
+            execl("/bin/bash","bash","-c",cmdstr,NULL);
+    else
+    waitpid(pid,NULL,0);
 }
-int main(int argc, char * argv[])
+int main(int argc,char *argv[])
 {
-	if(system1(argv[1])<0)
-		cout<<"sytem() error\n";
-	exit(0);
+    int i;
+    for(i=1;i< argc;i++)
+    {        sys(argv[i]);
+            printf("\n");
+    }
+    _exit(0);
 }
